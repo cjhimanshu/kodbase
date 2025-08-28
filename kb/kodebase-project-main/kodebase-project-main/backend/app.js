@@ -18,15 +18,7 @@ connectDB();
 
 var app = express();
 
-const mongoose = require('mongoose');
-
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/full-stack-ide', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => console.error('MongoDB connection error:', err));
+// mongoose connection is handled in ./config/db.js via connectDB()
 
 // GitHub OAuth configuration
 try {
