@@ -3,6 +3,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const userModel = require('../models/userModel');
 require('dotenv').config();
 
+// Configure Google strategy - only if credentials are provided
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -38,6 +40,18 @@ passport.use(new GoogleStrategy({
       return done(error);
     }
   }
+  }
 ));
+
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
+} else {
+  console.log('Google OAuth strategy not configured - set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
+}
 
 module.exports = passport;

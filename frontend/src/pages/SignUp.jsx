@@ -3,7 +3,7 @@ import logo from "../images/logos/logo.png";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { api_base_url } from '../helper';
 import { toast } from 'react-toastify';
-import { FaEye, FaEyeSlash, FaGoogle, FaFacebookF, FaGithub, FaCode, FaRocket } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa';
 
 const SignUp = () => {
   const [fullName, setFullName] = useState("");
@@ -19,14 +19,8 @@ const SignUp = () => {
     const params = new URLSearchParams(location.search);
     const error = params.get('error');
     
-    if (error === 'google_auth_failed') {
-      toast.error('Google authentication failed. Please try again.');
-    } else if (error === 'facebook_auth_failed') {
-      toast.error('Facebook authentication failed. Please try again.');
-    } else if (error === 'google_auth_not_configured') {
-      toast.error('Google authentication is not properly configured. Please try another method.');
-    } else if (error === 'facebook_auth_not_configured') {
-      toast.error('Facebook authentication is not properly configured. Please try another method.');
+    if (error) {
+      toast.error('Authentication failed. Please try another method.');
     }
   }, [location]);
 
@@ -51,36 +45,6 @@ const SignUp = () => {
         toast.error(data.msg);
       }
     });
-  };
-
-  const handleGoogleSignUp = () => {
-    try {
-      console.log("Redirecting to Google auth...");
-      window.location.href = `${api_base_url}/auth/google`;
-    } catch (error) {
-      console.error("Google auth error:", error);
-      toast.error('Google authentication is not available. Please try another method.');
-    }
-  };
-
-  const handleFacebookSignUp = () => {
-    try {
-      console.log("Redirecting to Facebook auth...");
-      window.location.href = `${api_base_url}/auth/facebook`;
-    } catch (error) {
-      console.error("Facebook auth error:", error);
-      toast.error('Facebook authentication is not available. Please try another method.');
-    }
-  };
-
-  const handleGithubSignUp = () => {
-    try {
-      console.log("Redirecting to GitHub auth...");
-      window.location.href = `${api_base_url}/auth/github`;
-    } catch (error) {
-      console.error("GitHub auth error:", error);
-      toast.error('GitHub authentication is not available. Please try another method.');
-    }
   };
 
   const handleGuestMode = () => {
@@ -210,35 +174,6 @@ const SignUp = () => {
               Login
             </Link>
           </p>
-        </div>
-        
-        <div className="relative flex items-center justify-center mt-6">
-          <div className="absolute border-t border-gray-700 w-full"></div>
-          <div className="relative px-4 bg-black text-gray-400">Or continue with</div>
-        </div>
-        
-        <div className="flex justify-center mt-6 space-x-4">
-          <button
-            onClick={handleGoogleSignUp}
-            className="p-3 bg-black/50 border border-gray-700 rounded-full hover:bg-gray-800 transition-all duration-300 group hover:shadow-[0_5px_15px_rgba(239,_68,_68,_0.5)] transform hover:scale-110"
-            type="button"
-          >
-            <FaGoogle className="text-gray-400 group-hover:text-red-500 transform transition-all duration-200" size={20} />
-          </button>
-          <button
-            onClick={handleFacebookSignUp}
-            className="p-3 bg-black/50 border border-gray-700 rounded-full hover:bg-gray-800 transition-all duration-300 group hover:shadow-[0_5px_15px_rgba(59,_130,_246,_0.5)] transform hover:scale-110"
-            type="button"
-          >
-            <FaFacebookF className="text-gray-400 group-hover:text-blue-500 transform transition-all duration-200" size={20} />
-          </button>
-          <button
-            onClick={handleGithubSignUp}
-            className="p-3 bg-black/50 border border-gray-700 rounded-full hover:bg-gray-800 transition-all duration-300 group hover:shadow-[0_5px_15px_rgba(255,_255,_255,_0.5)] transform hover:scale-110"
-            type="button"
-          >
-            <FaGithub className="text-gray-400 group-hover:text-white transform transition-all duration-200" size={20} />
-          </button>
         </div>
       </div>
     </div>

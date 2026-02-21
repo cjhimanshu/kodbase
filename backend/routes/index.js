@@ -1,5 +1,5 @@
 var express = require('express');
-const { signUp, login, createProj, saveProject, getProjects, getProject, deleteProject, editProject, githubAuth, githubCallback, forgotPassword, verifyResetCode, resetPassword } = require('../controllers/userController');
+const { signUp, login, createProj, saveProject, getProjects, getProject, deleteProject, editProject, forgotPassword, verifyResetCode, resetPassword } = require('../controllers/userController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const { sendContactEmail } = require('../utils/emailService');
 const { handleContact } = require('../controllers/contactController');
@@ -29,9 +29,5 @@ router.post("/getProjects", verifyToken, getProjects);
 router.post("/getProject", verifyToken, getProject);
 router.post("/deleteProject", verifyToken, deleteProject);
 router.post("/editProject", verifyToken, editProject);
-
-// OAuth routes
-router.get('/auth/github', githubAuth);
-router.get('/auth/github/callback', githubCallback);
 
 module.exports = router;

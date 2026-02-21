@@ -3,7 +3,7 @@ import logo from "../images/logos/logo.png";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { api_base_url } from '../helper';
-import { FaEye, FaEyeSlash, FaCode, FaRocket } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,40 +12,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation(); // Make sure this is added
-
-  // Update the GitHub login handler if needed
-  const handleGitHubLogin = () => {
-    try {
-      console.log("Redirecting to GitHub auth from Login...");
-      window.location.href = `${api_base_url}/auth/github`;
-    } catch (error) {
-      console.error("GitHub auth error:", error);
-      toast.error('GitHub authentication failed. Please try again.');
-    }
-  };
-
-  // Add Google login handler
-  const handleGoogleLogin = () => {
-    try {
-      console.log("Redirecting to Google auth from Login...");
-      window.location.href = `${api_base_url}/auth/google`;
-    } catch (error) {
-      console.error("Google auth error:", error);
-      toast.error('Google authentication failed. Please try again.');
-    }
-  };
-
-  // Add Facebook login handler
-  const handleFacebookLogin = () => {
-    try {
-      console.log("Redirecting to Facebook auth from Login...");
-      window.location.href = `${api_base_url}/auth/facebook`;
-    } catch (error) {
-      console.error("Facebook auth error:", error);
-      toast.error('Facebook authentication failed. Please try again.');
-    }
-  };
+  const location = useLocation();
 
   // Check for token in URL params (for OAuth callbacks)
   useEffect(() => {
@@ -55,17 +22,7 @@ const Login = () => {
     const error = params.get('error');
     
     if (error) {
-      if (error === 'google_auth_failed') {
-        toast.error('Google authentication failed. Please try again.');
-      } else if (error === 'facebook_auth_failed') {
-        toast.error('Facebook authentication failed. Please try again.');
-      } else if (error === 'github_auth_failed') {
-        toast.error('GitHub authentication failed. Please try again.');
-      } else if (error === 'google_auth_not_configured') {
-        toast.error('Google authentication is not properly configured. Please try another method.');
-      } else if (error === 'facebook_auth_not_configured') {
-        toast.error('Facebook authentication is not properly configured. Please try another method.');
-      }
+      toast.error('Authentication failed. Please try again.');
       return;
     }
     
@@ -277,44 +234,6 @@ const Login = () => {
             {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <div className="text-center">
-          <p className="text-sm text-gray-400">or login with</p>
-          <div className="flex justify-center mt-2 space-x-4">
-            <button 
-              className="p-2 bg-gray-800 rounded-full hover:bg-gray-700"
-              onClick={handleGoogleLogin}
-              type="button"
-            >
-              <img
-                src="https://cdn.iconscout.com/icon/free/png-256/free-google-1772223-1507807.png"
-                alt="Google"
-                className="w-5 h-5"
-              />
-            </button>
-            <button 
-              className="p-2 bg-gray-800 rounded-full hover:bg-gray-700"
-              onClick={handleFacebookLogin}
-              type="button"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
-                alt="Facebook"
-                className="w-5 h-5"
-              />
-            </button>
-            <button 
-              className="p-2 bg-gray-800 rounded-full hover:bg-gray-700"
-              onClick={handleGitHubLogin}
-              type="button"
-            >
-              <img
-                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                alt="GitHub"
-                className="w-5 h-5"
-              />
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
