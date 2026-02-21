@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import logo from "../images/logos/logo.png";
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { api_base_url } from '../helper';
-import { toast } from 'react-toastify';
-import { FaEye, FaEyeSlash, FaRocket } from 'react-icons/fa';
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { api_base_url } from "../helper";
+import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash, FaRocket } from "react-icons/fa";
 
 const SignUp = () => {
   const [fullName, setFullName] = useState("");
@@ -17,10 +17,10 @@ const SignUp = () => {
   // Check for errors in URL (from OAuth callbacks)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const error = params.get('error');
-    
+    const error = params.get("error");
+
     if (error) {
-      toast.error('Authentication failed. Please try another method.');
+      toast.error("Authentication failed. Please try another method.");
     }
   }, [location]);
 
@@ -30,21 +30,23 @@ const SignUp = () => {
       mode: "cors",
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         fullName: fullName,
         email: email,
-        pwd: pwd
-      })
-    }).then(res => res.json()).then(data => {
-      if (data.success) {
-        localStorage.setItem("fullName", fullName);
-        navigate("/login");
-      } else {
-        toast.error(data.msg);
-      }
-    });
+        pwd: pwd,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          localStorage.setItem("fullName", fullName);
+          navigate("/login");
+        } else {
+          toast.error(data.msg);
+        }
+      });
   };
 
   const handleGuestMode = () => {
@@ -52,47 +54,50 @@ const SignUp = () => {
     localStorage.setItem("isGuest", "true");
     localStorage.setItem("isLoggedIn", "true");
     localStorage.setItem("fullName", "Guest User");
-    
+
     // Create a temporary guest token with more entropy
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 10);
     const guestToken = `guest_${timestamp}_${randomString}`;
     localStorage.setItem("token", guestToken);
-    
+
     // Initialize empty projects array for guest
     localStorage.setItem("guestProjects", JSON.stringify([]));
-    
+
     // Show success message
-    toast.success("Guest mode activated! Code in any language without registration", {
-      autoClose: 2000,
-      position: "top-center"
-    });
-    
+    toast.success(
+      "Guest mode activated! Code in any language without registration",
+      {
+        autoClose: 2000,
+        position: "top-center",
+      },
+    );
+
     // Force navigation to home page
     window.location.href = "/";
   };
 
   return (
-    <div 
+    <div
       className="flex items-center justify-center min-h-screen bg-black relative"
       style={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.98))`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 animate-gradient-xy"></div>
-      
+
       <div className="relative bg-black/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_20px_50px_rgba(139,_92,_246,_0.3)] rounded-lg p-8 w-full max-w-md border border-gray-800/50 transform hover:scale-[1.02] transition-all duration-300">
         <div className="flex justify-center mb-6">
-          <img 
-            src={logo} 
-            alt="System logo" 
-            className="w-[280px] object-contain transform hover:scale-110 transition-all duration-300 hover:brightness-110 hover:drop-shadow-[0_0_30px_rgba(59,_130,_246,_0.5)]" 
+          <img
+            src={logo}
+            alt="System logo"
+            className="w-[280px] object-contain transform hover:scale-110 transition-all duration-300 hover:brightness-110 hover:drop-shadow-[0_0_30px_rgba(59,_130,_246,_0.5)]"
           />
         </div>
-        
+
         {/* Prominent Guest Mode Button */}
         <div className="mb-6 animate-pulse">
           <button
@@ -103,17 +108,22 @@ const SignUp = () => {
             <span className="font-bold text-lg">Start Coding Instantly</span>
           </button>
           <p className="text-center text-gray-400 text-sm mt-2">
-            Code in Python, JavaScript, Java, C++, and more languages without registration!
+            Code in Python, JavaScript, Java, C++, and more languages without
+            registration!
           </p>
         </div>
-        
+
         <div className="relative flex items-center justify-center my-6">
           <div className="absolute border-t border-gray-700 w-full"></div>
           <div className="relative px-4 bg-black text-gray-400">OR</div>
         </div>
 
-        <h2 className="text-xl font-bold text-center text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">Create an Account</h2>
-        <p className="text-center text-gray-400 mb-6">Sign up to save your projects permanently</p>
+        <h2 className="text-xl font-bold text-center text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+          Create an Account
+        </h2>
+        <p className="text-center text-gray-400 mb-6">
+          Sign up to save your projects permanently
+        </p>
         <form onSubmit={submitForm}>
           <div className="mb-4">
             <input
@@ -154,10 +164,16 @@ const SignUp = () => {
           </div>
           <div className="flex items-center justify-between mb-4">
             <label className="flex items-center text-gray-400">
-              <input type="checkbox" className="mr-2 rounded border-gray-600 text-purple-500 focus:ring-purple-500 bg-black/50" />
+              <input
+                type="checkbox"
+                className="mr-2 rounded border-gray-600 text-purple-500 focus:ring-purple-500 bg-black/50"
+              />
               Remember me
             </label>
-            <Link to="/forgot-password" className="text-purple-500 hover:text-purple-400 transition-colors">
+            <Link
+              to="/forgot-password"
+              className="text-purple-500 hover:text-purple-400 transition-colors"
+            >
               Forgot Password?
             </Link>
           </div>
@@ -169,8 +185,12 @@ const SignUp = () => {
           </button>
         </form>
         <div className="text-center mt-6">
-          <p className="text-gray-400">Already have an account? 
-            <Link to="/login" className="text-purple-500 hover:text-purple-400 ml-1 transition-colors">
+          <p className="text-gray-400">
+            Already have an account?
+            <Link
+              to="/login"
+              className="text-purple-500 hover:text-purple-400 ml-1 transition-colors"
+            >
               Login
             </Link>
           </p>

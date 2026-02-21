@@ -1,25 +1,37 @@
-var express = require('express');
-const { signUp, login, createProj, saveProject, getProjects, getProject, deleteProject, editProject, forgotPassword, verifyResetCode, resetPassword } = require('../controllers/userController');
-const { verifyToken } = require('../middleware/authMiddleware');
-const { sendContactEmail } = require('../utils/emailService');
-const { handleContact } = require('../controllers/contactController');
+var express = require("express");
+const {
+  signUp,
+  login,
+  createProj,
+  saveProject,
+  getProjects,
+  getProject,
+  deleteProject,
+  editProject,
+  forgotPassword,
+  verifyResetCode,
+  resetPassword,
+} = require("../controllers/userController");
+const { verifyToken } = require("../middleware/authMiddleware");
+const { sendContactEmail } = require("../utils/emailService");
+const { handleContact } = require("../controllers/contactController");
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get("/", function (req, res, next) {
   res.json({
     success: true,
-    message: 'API is running'
+    message: "API is running",
   });
 });
 
 // Public routes
 router.post("/signUp", signUp);
 router.post("/login", login);
-router.post('/forgot-password', forgotPassword);
-router.post('/verify-reset-code', verifyResetCode);
-router.post('/reset-password', resetPassword);
-router.post('/contact', handleContact);
+router.post("/forgot-password", forgotPassword);
+router.post("/verify-reset-code", verifyResetCode);
+router.post("/reset-password", resetPassword);
+router.post("/contact", handleContact);
 
 // Protected routes - add the verifyToken middleware
 // The actual project route handlers can focus on their core functionality
