@@ -291,7 +291,7 @@ public class ${className} {
 
       console.log("Sending execution request for language:", languageToUse);
       
-      const response = await fetch("https://emkc.org/api/v2/piston/execute", {
+      const response = await fetch(`${api_base_url}/runCode`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -443,7 +443,7 @@ public class ${className} {
     const languageToUse = data?.projLanguage || 'python';
     const projectName = data?.name ? data.name.replace(/[^a-zA-Z0-9]/g, '_') : 'main';
     
-    fetch("https://emkc.org/api/v2/piston/execute", {
+    fetch(`${api_base_url}/runCode`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

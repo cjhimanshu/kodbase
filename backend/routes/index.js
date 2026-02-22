@@ -11,6 +11,7 @@ const {
   forgotPassword,
   verifyResetCode,
   resetPassword,
+  runCode,
 } = require("../controllers/userController");
 const { verifyToken } = require("../middleware/authMiddleware");
 const { sendContactEmail } = require("../utils/emailService");
@@ -26,6 +27,7 @@ router.get("/", function (req, res, next) {
 });
 
 // Public routes
+router.post("/runCode", runCode);
 router.post("/signUp", signUp);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);

@@ -619,6 +619,42 @@ const verifyResetCode = async (req, res) => {
   }
 };
 
+const runCode = async (req, res) => {
+  try {
+    const pistonUrl = "https://emkc.org/api/v2/piston/execute";
+    const apiKey = process.env.PISTON_API_KEY;
+
+    const headers = { "Content-Type": "application/json" };
+    if (apiKey) {
+      headers["Authorization"] = apiKey;
+    }
+
+    const response = await fetch(pistonUrl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(req.body),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      return res.status(response.status).json({
+        success: false,
+        msg: `Execution service error: ${response.status}`,
+        detail: text,
+      });
+    }
+
+    const data = await response.json();
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("runCode proxy error:", error.message);
+    return res.status(500).json({
+      success: false,
+      msg: "Failed to execute code: " + error.message,
+    });
+  }
+};
+
 module.exports = {
   signUp,
   login,
@@ -632,5 +668,6 @@ module.exports = {
   githubCallback,
   forgotPassword,
   verifyResetCode,
-  resetPassword
+  resetPassword,
+  runCode
 };
