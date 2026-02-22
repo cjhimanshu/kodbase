@@ -639,7 +639,7 @@ const Home = () => {
                         className="w-10 h-10 object-contain"
                         onError={(e) => {
                           e.target.src =
-                            "https://via.placeholder.com/48?text=?";
+                            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23374151' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='20' fill='%239ca3af' text-anchor='middle' dominant-baseline='middle'%3E%3F%3C/text%3E%3C/svg%3E";
                           e.target.onerror = null;
                         }}
                       />
