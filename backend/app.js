@@ -21,15 +21,7 @@ var app = express();
 const isProd = process.env.NODE_ENV === "production";
 const frontendUrl =
   process.env.FRONTEND_URL || (!isProd ? "http://localhost:5173" : undefined);
-
-// Allow multiple frontend origins
-const allowedOrigins = [
-  frontendUrl,
-  "https://kodbase.vercel.app",
-  "https://kodebase.dheerajsonkar.in"
-].filter(Boolean);
-
-if (isProd && allowedOrigins.length === 0) {
+if (isProd && !frontendUrl) {
   console.warn(
     "FRONTEND_URL not set for production; CORS will reject all origins",
   );
@@ -138,17 +130,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // CORS configuration
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        console.warn(`Blocked origin: ${origin}`);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: frontendUrl || false,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
