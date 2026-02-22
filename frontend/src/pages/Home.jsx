@@ -293,7 +293,43 @@ const Home = () => {
     }
 
     // Regular project creation flow for logged in users
-    // ...existing createProj code...
+    if (!name || !selectedLanguage) {
+      toast.error("Project name and language are required");
+      return;
+    }
+
+    setLoading(true);
+
+    fetch(api_base_url + "/createProj", {
+      mode: "cors",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: localStorage.getItem("token"),
+        name: name,
+        projLanguage: selectedLanguage.value,
+        version: selectedLanguage.version,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setLoading(false);
+        if (data.success) {
+          setName("");
+          setIsCreateModelShow(false);
+          toast.success("Project created successfully!");
+          navigate("/editor/" + data.projectId);
+        } else {
+          toast.error(data.msg || "Failed to create project");
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.error("Create project error:", err);
+        toast.error("Failed to create project");
+      });
   };
 
   // Handle deleting a guest project
