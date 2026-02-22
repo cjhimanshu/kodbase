@@ -55,8 +55,8 @@ const Home = () => {
           ? "#333"
           : "#f3f4f6"
         : localStorage.getItem("theme") === "dark"
-        ? "#000"
-        : "#fff",
+          ? "#000"
+          : "#fff",
       color: localStorage.getItem("theme") === "dark" ? "#fff" : "#111",
       cursor: "pointer",
     }),
@@ -271,7 +271,7 @@ const Home = () => {
       const newProject = createGuestProject(
         name,
         selectedLanguage.value,
-        selectedLanguage.version
+        selectedLanguage.version,
       );
 
       // Add to projects list
@@ -539,116 +539,116 @@ const Home = () => {
                 key === "python"
                   ? "text-green-600 dark:text-green-400"
                   : key === "javascript"
-                  ? "text-yellow-600 dark:text-yellow-400"
-                  : key === "cpp"
-                  ? "text-purple-600 dark:text-purple-400"
-                  : key === "c"
-                  ? "text-blue-600 dark:text-blue-400"
-                  : key === "java"
-                  ? "text-red-600 dark:text-red-400"
-                  : key === "bash"
-                  ? "text-gray-600 dark:text-gray-400"
-                  : key === "dart"
-                  ? "text-teal-600 dark:text-teal-400"
-                  : key === "swift"
-                  ? "text-orange-600 dark:text-orange-400"
-                  : key === "php"
-                  ? "text-indigo-600 dark:text-indigo-400"
-                  : key === "go"
-                  ? "text-cyan-600 dark:text-cyan-400"
-                  : "text-rose-600 dark:text-rose-400";
+                    ? "text-yellow-600 dark:text-yellow-400"
+                    : key === "cpp"
+                      ? "text-purple-600 dark:text-purple-400"
+                      : key === "c"
+                        ? "text-blue-600 dark:text-blue-400"
+                        : key === "java"
+                          ? "text-red-600 dark:text-red-400"
+                          : key === "bash"
+                            ? "text-gray-600 dark:text-gray-400"
+                            : key === "dart"
+                              ? "text-teal-600 dark:text-teal-400"
+                              : key === "swift"
+                                ? "text-orange-600 dark:text-orange-400"
+                                : key === "php"
+                                  ? "text-indigo-600 dark:text-indigo-400"
+                                  : key === "go"
+                                    ? "text-cyan-600 dark:text-cyan-400"
+                                    : "text-rose-600 dark:text-rose-400";
 
               const gradientFrom =
                 key === "python"
                   ? "from-green-50 dark:from-green-900/10"
                   : key === "javascript"
-                  ? "from-yellow-50 dark:from-yellow-900/10"
-                  : key === "cpp"
-                  ? "from-purple-50 dark:from-purple-900/10"
-                  : key === "c"
-                  ? "from-blue-50 dark:from-blue-900/10"
-                  : key === "java"
-                  ? "from-red-50 dark:from-red-900/10"
-                  : key === "bash"
-                  ? "from-gray-50 dark:from-gray-900/10"
-                  : key === "dart"
-                  ? "from-teal-50 dark:from-teal-900/10"
-                  : key === "swift"
-                  ? "from-orange-50 dark:from-orange-900/10"
-                  : key === "php"
-                  ? "from-indigo-50 dark:from-indigo-900/10"
-                  : key === "go"
-                  ? "from-cyan-50 dark:from-cyan-900/10"
-                  : "from-rose-50 dark:from-rose-900/10";
+                    ? "from-yellow-50 dark:from-yellow-900/10"
+                    : key === "cpp"
+                      ? "from-purple-50 dark:from-purple-900/10"
+                      : key === "c"
+                        ? "from-blue-50 dark:from-blue-900/10"
+                        : key === "java"
+                          ? "from-red-50 dark:from-red-900/10"
+                          : key === "bash"
+                            ? "from-gray-50 dark:from-gray-900/10"
+                            : key === "dart"
+                              ? "from-teal-50 dark:from-teal-900/10"
+                              : key === "swift"
+                                ? "from-orange-50 dark:from-orange-900/10"
+                                : key === "php"
+                                  ? "from-indigo-50 dark:from-indigo-900/10"
+                                  : key === "go"
+                                    ? "from-cyan-50 dark:from-cyan-900/10"
+                                    : "from-rose-50 dark:from-rose-900/10";
 
               const borderColor =
                 key === "python"
                   ? "border-green-100/30 dark:border-green-700/30"
                   : key === "javascript"
-                  ? "border-yellow-100/30 dark:border-yellow-700/30"
-                  : key === "cpp"
-                  ? "border-purple-100/30 dark:border-purple-700/30"
-                  : key === "c"
-                  ? "border-blue-100/30 dark:border-blue-700/30"
-                  : key === "java"
-                  ? "border-red-100/30 dark:border-red-700/30"
-                  : key === "bash"
-                  ? "border-gray-100/30 dark:border-gray-700/30"
-                  : key === "dart"
-                  ? "border-teal-100/30 dark:border-teal-700/30"
-                  : key === "swift"
-                  ? "border-orange-100/30 dark:border-orange-700/30"
-                  : key === "php"
-                  ? "border-indigo-100/30 dark:border-indigo-700/30"
-                  : key === "go"
-                  ? "border-cyan-100/30 dark:border-cyan-700/30"
-                  : "border-rose-100/30 dark:border-rose-700/30";
+                    ? "border-yellow-100/30 dark:border-yellow-700/30"
+                    : key === "cpp"
+                      ? "border-purple-100/30 dark:border-purple-700/30"
+                      : key === "c"
+                        ? "border-blue-100/30 dark:border-blue-700/30"
+                        : key === "java"
+                          ? "border-red-100/30 dark:border-red-700/30"
+                          : key === "bash"
+                            ? "border-gray-100/30 dark:border-gray-700/30"
+                            : key === "dart"
+                              ? "border-teal-100/30 dark:border-teal-700/30"
+                              : key === "swift"
+                                ? "border-orange-100/30 dark:border-orange-700/30"
+                                : key === "php"
+                                  ? "border-indigo-100/30 dark:border-indigo-700/30"
+                                  : key === "go"
+                                    ? "border-cyan-100/30 dark:border-cyan-700/30"
+                                    : "border-rose-100/30 dark:border-rose-700/30";
 
               const topBorderColor =
                 key === "python"
                   ? "from-green-400 to-emerald-500"
                   : key === "javascript"
-                  ? "from-yellow-400 to-amber-500"
-                  : key === "cpp"
-                  ? "from-purple-400 to-violet-500"
-                  : key === "c"
-                  ? "from-blue-400 to-indigo-500"
-                  : key === "java"
-                  ? "from-red-400 to-rose-500"
-                  : key === "bash"
-                  ? "from-gray-400 to-slate-500"
-                  : key === "dart"
-                  ? "from-teal-400 to-cyan-500"
-                  : key === "swift"
-                  ? "from-orange-400 to-amber-500"
-                  : key === "php"
-                  ? "from-indigo-400 to-violet-500"
-                  : key === "go"
-                  ? "from-cyan-400 to-sky-500"
-                  : "from-rose-400 to-pink-500";
+                    ? "from-yellow-400 to-amber-500"
+                    : key === "cpp"
+                      ? "from-purple-400 to-violet-500"
+                      : key === "c"
+                        ? "from-blue-400 to-indigo-500"
+                        : key === "java"
+                          ? "from-red-400 to-rose-500"
+                          : key === "bash"
+                            ? "from-gray-400 to-slate-500"
+                            : key === "dart"
+                              ? "from-teal-400 to-cyan-500"
+                              : key === "swift"
+                                ? "from-orange-400 to-amber-500"
+                                : key === "php"
+                                  ? "from-indigo-400 to-violet-500"
+                                  : key === "go"
+                                    ? "from-cyan-400 to-sky-500"
+                                    : "from-rose-400 to-pink-500";
 
               const shadowHover =
                 key === "python"
                   ? "rgba(16,185,129,0.15)"
                   : key === "javascript"
-                  ? "rgba(245,158,11,0.15)"
-                  : key === "cpp"
-                  ? "rgba(139,92,246,0.15)"
-                  : key === "c"
-                  ? "rgba(59,130,246,0.15)"
-                  : key === "java"
-                  ? "rgba(239,68,68,0.15)"
-                  : key === "bash"
-                  ? "rgba(107,114,128,0.15)"
-                  : key === "dart"
-                  ? "rgba(20,184,166,0.15)"
-                  : key === "swift"
-                  ? "rgba(249,115,22,0.15)"
-                  : key === "php"
-                  ? "rgba(99,102,241,0.15)"
-                  : key === "go"
-                  ? "rgba(6,182,212,0.15)"
-                  : "rgba(244,63,94,0.15)";
+                    ? "rgba(245,158,11,0.15)"
+                    : key === "cpp"
+                      ? "rgba(139,92,246,0.15)"
+                      : key === "c"
+                        ? "rgba(59,130,246,0.15)"
+                        : key === "java"
+                          ? "rgba(239,68,68,0.15)"
+                          : key === "bash"
+                            ? "rgba(107,114,128,0.15)"
+                            : key === "dart"
+                              ? "rgba(20,184,166,0.15)"
+                              : key === "swift"
+                                ? "rgba(249,115,22,0.15)"
+                                : key === "php"
+                                  ? "rgba(99,102,241,0.15)"
+                                  : key === "go"
+                                    ? "rgba(6,182,212,0.15)"
+                                    : "rgba(244,63,94,0.15)";
 
               return (
                 <div
@@ -772,7 +772,7 @@ const Home = () => {
                   <div className="relative">
                     <Select
                       value={languageOptions.find(
-                        (opt) => opt.value === selectedFilter
+                        (opt) => opt.value === selectedFilter,
                       )}
                       onChange={(option) =>
                         setSelectedFilter(option ? option.value : "all")
@@ -824,7 +824,7 @@ const Home = () => {
                   <button
                     onClick={() =>
                       toast.info(
-                        `Searching for "${searchQuery}" in ${selectedFilter} projects`
+                        `Searching for "${searchQuery}" in ${selectedFilter} projects`,
                       )
                     }
                     className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-lg hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 whitespace-nowrap flex items-center justify-center gap-2 w-full md:w-auto"

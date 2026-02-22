@@ -1,14 +1,14 @@
 const userModel = require("../models/userModel");
 const projectModel = require("../models/projectModel");
-var bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
-const passport = require('passport');
-const { sendResetCode } = require('../utils/emailService');  // Fixed import
+var bcrypt = require("bcryptjs");
+var jwt = require("jsonwebtoken");
+const passport = require("passport");
+const { sendResetCode } = require("../utils/emailService"); // Fixed import
 
 const secret = process.env.JWT_SECRET || "secret";
 
 function getStartupCode(language) {
-  switch(language.toLowerCase()) {
+  switch (language.toLowerCase()) {
     case "python":
       return 'print("Hello World")';
     case "javascript":
@@ -46,8 +46,8 @@ const signUp = async (req, res) => {
     if (emailCon) {
       return res.status(400).json({
         success: false,
-        msg: "Email already exist"
-      })
+        msg: "Email already exist",
+      });
     }
 
     bcrypt.genSalt(12, function (err, salt) {
@@ -55,7 +55,7 @@ const signUp = async (req, res) => {
         let user = await userModel.create({
           email: email,
           password: hash,
-          fullName: fullName
+          fullName: fullName,
         });
 
         return res.status(200).json({
@@ -64,11 +64,10 @@ const signUp = async (req, res) => {
         });
       });
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      msg: error.message
+      msg: error.message,
     });
   }
 };
@@ -76,85 +75,87 @@ const signUp = async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { resetToken, newPassword, email, bypassToken } = req.body;
-    
+
     if (!newPassword || newPassword.length < 6) {
       return res.status(400).json({
         success: false,
-        msg: "Password must be at least 6 characters long"
+        msg: "Password must be at least 6 characters long",
       });
     }
-    
+
     let user;
-    
+
     // Handle both token-based and email-based resets
     if (resetToken) {
       try {
         // Verify reset token
-        const decoded = jwt.verify(resetToken, process.env.JWT_SECRET || 'your_jwt_secret');
+        const decoded = jwt.verify(
+          resetToken,
+          process.env.JWT_SECRET || "your_jwt_secret",
+        );
         user = await userModel.findOne({ _id: decoded.userId });
       } catch (tokenError) {
-        console.error('Token verification error:', tokenError.message);
+        console.error("Token verification error:", tokenError.message);
         return res.status(401).json({
           success: false,
-          msg: "Invalid or expired token"
+          msg: "Invalid or expired token",
         });
       }
     } else if (email && bypassToken) {
       // Development bypass mode using email directly
       user = await userModel.findOne({ email });
-      
+
       if (!user) {
         return res.status(404).json({
           success: false,
-          msg: "User not found with this email address"
+          msg: "User not found with this email address",
         });
       }
     } else {
       return res.status(400).json({
         success: false,
-        msg: "Missing required parameters"
+        msg: "Missing required parameters",
       });
     }
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found"
+        msg: "User not found",
       });
     }
 
     // Hash new password
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
-    
+
     // Update password and clear reset code
     user.password = hashedPassword;
     user.resetPasswordCode = undefined;
     user.resetPasswordExpires = undefined;
-    
+
     // Save the updated user and handle potential validation errors
     try {
       await user.save();
-      
+
       console.log(`Password reset successful for user: ${user.email}`);
-      
+
       return res.status(200).json({
         success: true,
-        msg: "Password successfully reset"
+        msg: "Password successfully reset",
       });
     } catch (saveError) {
-      console.error('Error saving updated password:', saveError);
+      console.error("Error saving updated password:", saveError);
       return res.status(500).json({
         success: false,
-        msg: "Failed to update password. Please try again."
+        msg: "Failed to update password. Please try again.",
       });
     }
-
   } catch (error) {
-    console.error('Password reset error:', error);
+    console.error("Password reset error:", error);
     return res.status(500).json({
       success: false,
-      msg: "Server error during password reset. Please try again."
+      msg: "Server error during password reset. Please try again.",
     });
   }
 };
@@ -166,7 +167,7 @@ const login = async (req, res) => {
     if (!email || !pwd) {
       return res.status(400).json({
         success: false,
-        msg: "Email and password are required"
+        msg: "Email and password are required",
       });
     }
 
@@ -174,56 +175,56 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found"
+        msg: "User not found",
       });
     }
 
     try {
       // Log the provided password and the stored hash for debugging
       console.log(`Login attempt for ${email}`);
-      
+
       const isMatch = await bcrypt.compare(pwd, user.password);
       if (isMatch) {
         // Create a better structured token with proper algorithm
         const token = jwt.sign(
-          { 
+          {
             userId: user._id,
-            email: user.email
-          }, 
-          secret, 
-          { 
-            expiresIn: '24h',
-            algorithm: 'HS256'
-          }
+            email: user.email,
+          },
+          secret,
+          {
+            expiresIn: "24h",
+            algorithm: "HS256",
+          },
         );
-        
+
         console.log(`Login successful for user: ${user.email}`);
-        
+
         return res.status(200).json({
           success: true,
           msg: "Login successful",
           token,
-          fullName: user.fullName
+          fullName: user.fullName,
         });
       } else {
         console.log(`Invalid password attempt for user: ${email}`);
         return res.status(401).json({
           success: false,
-          msg: "Invalid password"
+          msg: "Invalid password",
         });
       }
     } catch (err) {
-      console.error('Password comparison error:', err);
+      console.error("Password comparison error:", err);
       return res.status(500).json({
         success: false,
-        msg: "Error verifying password"
+        msg: "Error verifying password",
       });
     }
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return res.status(500).json({
       success: false,
-      msg: "Server error during login. Please try again."
+      msg: "Server error during login. Please try again.",
     });
   }
 };
@@ -231,7 +232,7 @@ const login = async (req, res) => {
 const createProj = async (req, res) => {
   try {
     let { name, projLanguage, version } = req.body;
-    
+
     // Handle guest user
     if (req.user && req.user.isGuest) {
       const guestProjectId = `guest_${Date.now()}`;
@@ -239,17 +240,17 @@ const createProj = async (req, res) => {
         success: true,
         msg: "Guest project created successfully",
         projectId: guestProjectId,
-        isGuest: true
+        isGuest: true,
       });
     }
-    
+
     const userId = req.user.userId; // from verifyToken middleware
-    
+
     let user = await userModel.findOne({ _id: userId });
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found"
+        msg: "User not found",
       });
     }
 
@@ -261,19 +262,19 @@ const createProj = async (req, res) => {
       projLanguage: projLanguage,
       createdBy: userId,
       code: starterCode, // Use the starter code here
-      version: version || '1.0.0'
+      version: version || "1.0.0",
     });
 
     return res.status(200).json({
       success: true,
       msg: "Project created successfully",
-      projectId: project._id
+      projectId: project._id,
     });
   } catch (error) {
     console.error("Create project error:", error.message);
     return res.status(500).json({
       success: false,
-      msg: "Server error occurred when creating project"
+      msg: "Server error occurred when creating project",
     });
   }
 };
@@ -281,41 +282,43 @@ const createProj = async (req, res) => {
 const saveProject = async (req, res) => {
   try {
     let { projectId, code } = req.body;
-    
+
     // Handle guest user
     if (req.user && req.user.isGuest) {
       // For guest users, we just return success as they save locally
       return res.status(200).json({
         success: true,
         msg: "Guest project saved",
-        isGuest: true
+        isGuest: true,
       });
     }
-    
+
     const userId = req.user.userId; // from middleware
-    
+
     let user = await userModel.findOne({ _id: userId });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found"
+        msg: "User not found",
       });
-    };
+    }
 
-    let project = await projectModel.findOneAndUpdate({ _id: projectId }, {code: code});
+    let project = await projectModel.findOneAndUpdate(
+      { _id: projectId },
+      { code: code },
+    );
 
     return res.status(200).json({
       success: true,
-      msg: "Project saved successfully"
+      msg: "Project saved successfully",
     });
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({
       success: false,
-      msg: error.message
-    })
+      msg: error.message,
+    });
   }
 };
 
@@ -329,18 +332,18 @@ const getProjects = async (req, res) => {
         success: true,
         msg: "Guest user projects",
         projects: [],
-        isGuest: true
+        isGuest: true,
       });
     }
 
     // Regular user flow continues here
     const userId = req.user.userId;
-    
+
     let user = await userModel.findOne({ _id: userId });
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found"
+        msg: "User not found",
       });
     }
 
@@ -348,26 +351,26 @@ const getProjects = async (req, res) => {
     return res.status(200).json({
       success: true,
       msg: "Projects fetched successfully",
-      projects: projects
+      projects: projects,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      msg: error.message
-    })
+      msg: error.message,
+    });
   }
 };
 
 const getProject = async (req, res) => {
   try {
     let { projectId } = req.body;
-    
+
     // Handle guest user
     if (req.user && req.user.isGuest) {
       return res.status(200).json({
         success: true,
         msg: "Guest project info",
-        isGuest: true
+        isGuest: true,
       });
     }
 
@@ -377,7 +380,7 @@ const getProject = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found"
+        msg: "User not found",
       });
     }
 
@@ -387,43 +390,41 @@ const getProject = async (req, res) => {
       return res.status(200).json({
         success: true,
         msg: "Project fetched successfully",
-        project: project
+        project: project,
       });
-    }
-    else {
+    } else {
       return res.status(404).json({
         success: false,
-        msg: "Project not found"
+        msg: "Project not found",
       });
     }
-
   } catch (error) {
     return res.status(500).json({
       success: false,
-      msg: error.message
-    })
+      msg: error.message,
+    });
   }
 };
 
 const deleteProject = async (req, res) => {
   try {
     let { projectId } = req.body;
-    
+
     // Handle guest user
     if (req.user && req.user.isGuest) {
       return res.status(200).json({
         success: true,
         msg: "Guest project deleted",
-        isGuest: true
+        isGuest: true,
       });
     }
-    
+
     let user = await userModel.findOne({ _id: req.user.userId });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found"
+        msg: "User not found",
       });
     }
 
@@ -431,87 +432,84 @@ const deleteProject = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      msg: "Project deleted successfully"
-    })
-
+      msg: "Project deleted successfully",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      msg: error.message
-    })
+      msg: error.message,
+    });
   }
 };
 
 const editProject = async (req, res) => {
   try {
     let { projectId, name } = req.body;
-    
+
     // Handle guest user
     if (req.user && req.user.isGuest) {
       return res.status(200).json({
         success: true,
         msg: "Guest project edited",
-        isGuest: true
+        isGuest: true,
       });
     }
-    
+
     let user = await userModel.findOne({ _id: req.user.userId });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found"
+        msg: "User not found",
       });
-    };
+    }
 
     let project = await projectModel.findOne({ _id: projectId });
-    if(project){
+    if (project) {
       project.name = name;
       await project.save();
       return res.status(200).json({
         success: true,
-        msg: "Project edited successfully"
-      })
-    }
-    else{
+        msg: "Project edited successfully",
+      });
+    } else {
       return res.status(404).json({
         success: false,
-        msg: "Project not found"
-      })
+        msg: "Project not found",
+      });
     }
-
   } catch (error) {
     return res.status(500).json({
       success: false,
-      msg: error.message
-    })
+      msg: error.message,
+    });
   }
 };
 
 // GitHub authentication handler
-const githubAuth = passport.authenticate('github', { scope: [ 'user:email' ] });
+const githubAuth = passport.authenticate("github", { scope: ["user:email"] });
 
 // GitHub callback handler
 const githubCallback = (req, res, next) => {
-  passport.authenticate('github', async (err, profile) => {
-    if (err) return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=github_auth_failed`);
-    
+  passport.authenticate("github", async (err, profile) => {
+    if (err)
+      return res.redirect(
+        `${process.env.FRONTEND_URL || "http://localhost:5173"}/login?error=github_auth_failed`,
+      );
+
     try {
       // Check if user exists by GitHub ID or email
-      let user = await userModel.findOne({ 
-        $or: [
-          { githubId: profile.id },
-          { email: profile.emails[0].value }
-        ]
+      let user = await userModel.findOne({
+        $or: [{ githubId: profile.id }, { email: profile.emails[0].value }],
       });
-      
+
       if (!user) {
         // Create new user if doesn't exist
         user = await userModel.create({
           email: profile.emails[0].value,
           fullName: profile.displayName || profile.username,
           password: Math.random().toString(36).slice(-8), // Generate random password
-          githubId: profile.id
+          githubId: profile.id,
         });
       } else {
         // Update existing user's GitHub ID if not set
@@ -520,19 +518,23 @@ const githubCallback = (req, res, next) => {
           await user.save();
         }
       }
-      
+
       // Generate JWT token
       const token = jwt.sign(
         { userId: user._id },
-        process.env.JWT_SECRET || 'your_jwt_secret',
-        { expiresIn: '24h' }
+        process.env.JWT_SECRET || "your_jwt_secret",
+        { expiresIn: "24h" },
       );
 
       // Redirect to frontend with token and fullName
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?token=${token}&fullName=${encodeURIComponent(user.fullName)}`);
+      res.redirect(
+        `${process.env.FRONTEND_URL || "http://localhost:5173"}/login?token=${token}&fullName=${encodeURIComponent(user.fullName)}`,
+      );
     } catch (error) {
-      console.error('GitHub auth error:', error);
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=github_auth_failed`);
+      console.error("GitHub auth error:", error);
+      res.redirect(
+        `${process.env.FRONTEND_URL || "http://localhost:5173"}/login?error=github_auth_failed`,
+      );
     }
   })(req, res, next);
 };
@@ -541,26 +543,26 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await userModel.findOne({ email });
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
-        msg: "User not found with this email address"
+        msg: "User not found with this email address",
       });
     }
 
     const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
-    
+
     user.resetPasswordCode = verificationCode;
     user.resetPasswordExpires = Date.now() + 3600000;
     await user.save();
 
     try {
       await sendResetCode(email, verificationCode);
-      
+
       return res.status(200).json({
         success: true,
-        msg: "Verification code sent to your email"
+        msg: "Verification code sent to your email",
       });
     } catch (emailError) {
       // Rollback the saved verification code if email fails
@@ -570,15 +572,16 @@ const forgotPassword = async (req, res) => {
 
       return res.status(emailError.statusCode || 500).json({
         success: false,
-        msg: emailError.message || "Failed to send verification code. Please try again."
+        msg:
+          emailError.message ||
+          "Failed to send verification code. Please try again.",
       });
     }
-
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error("Forgot password error:", error);
     return res.status(500).json({
       success: false,
-      msg: "Server error. Please try again later."
+      msg: "Server error. Please try again later.",
     });
   }
 };
@@ -586,35 +589,34 @@ const forgotPassword = async (req, res) => {
 const verifyResetCode = async (req, res) => {
   try {
     const { email, code } = req.body;
-    const user = await userModel.findOne({ 
+    const user = await userModel.findOne({
       email,
       resetPasswordCode: code,
-      resetPasswordExpires: { $gt: Date.now() }
+      resetPasswordExpires: { $gt: Date.now() },
     });
 
     if (!user) {
       return res.status(400).json({
         success: false,
-        msg: "Invalid or expired verification code"
+        msg: "Invalid or expired verification code",
       });
     }
 
     // Generate reset token
     const resetToken = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET || 'your_jwt_secret',
-      { expiresIn: '1h' }
+      process.env.JWT_SECRET || "your_jwt_secret",
+      { expiresIn: "1h" },
     );
 
     return res.status(200).json({
       success: true,
-      resetToken
+      resetToken,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
-      msg: error.message
+      msg: error.message,
     });
   }
 };
@@ -669,5 +671,5 @@ module.exports = {
   forgotPassword,
   verifyResetCode,
   resetPassword,
-  runCode
+  runCode,
 };
