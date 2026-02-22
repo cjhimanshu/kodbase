@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify'; // Add this import
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // Add this import
+import { api_base_url } from "../helper";
 
 const VerifyOTP = () => {
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const email = localStorage.getItem('resetEmail');
+  const email = localStorage.getItem("resetEmail");
 
   useEffect(() => {
     if (!email) {
-      navigate('/forgot-password');
+      navigate("/forgot-password");
     }
   }, [email, navigate]);
 
@@ -20,25 +21,25 @@ const VerifyOTP = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/verify-reset-code`, {
-        method: 'POST',
+      const response = await fetch(`${api_base_url}/verify-reset-code`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, code }),
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
-        toast.success('Code verified successfully');
+        toast.success("Code verified successfully");
         // Pass the reset token to ResetPassword component
         navigate(`/reset-password?token=${data.resetToken}`);
       } else {
-        toast.error(data.msg || 'Invalid verification code');
+        toast.error(data.msg || "Invalid verification code");
       }
     } catch (error) {
-      toast.error('An error occurred. Please try again.');
+      toast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +48,9 @@ const VerifyOTP = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="max-w-md w-full space-y-8 p-8 bg-gray-800 rounded-lg">
-        <h2 className="text-3xl font-bold text-white text-center">Enter Verification Code</h2>
+        <h2 className="text-3xl font-bold text-white text-center">
+          Enter Verification Code
+        </h2>
         {error && <div className="text-red-500 text-center">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <input
