@@ -2,6 +2,8 @@
 
 A modern web-based code editor with powerful features, user authentication, and project management capabilities. Write, edit, and manage code seamlessly in your browser.
 
+<!-- Last updated: 2026-02-22 -->
+
 ## 🌟 Features
 
 - **Online Code Editor** - Write and edit code with syntax highlighting
