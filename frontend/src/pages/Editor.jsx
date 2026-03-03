@@ -1,6 +1,25 @@
 import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../components/Navbar";
-import Editor2 from "@monaco-editor/react";
+import CodeMirror from "@uiw/react-codemirror";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { EditorView } from "@codemirror/view";
+import { python } from "@codemirror/lang-python";
+import { javascript } from "@codemirror/lang-javascript";
+import { cpp } from "@codemirror/lang-cpp";
+import { java } from "@codemirror/lang-java";
+import { php } from "@codemirror/lang-php";
+import { rust } from "@codemirror/lang-rust";
+import { StreamLanguage } from "@codemirror/language";
+import { go } from "@codemirror/legacy-modes/mode/go";
+import { ruby } from "@codemirror/legacy-modes/mode/ruby";
+import { shell } from "@codemirror/legacy-modes/mode/shell";
+import { swift } from "@codemirror/legacy-modes/mode/swift";
+import { haskell } from "@codemirror/legacy-modes/mode/haskell";
+import { perl } from "@codemirror/legacy-modes/mode/perl";
+import { r } from "@codemirror/legacy-modes/mode/r";
+import { kotlin } from "@codemirror/legacy-modes/mode/clike";
+import { csharp } from "@codemirror/legacy-modes/mode/clike";
+import { scala } from "@codemirror/legacy-modes/mode/clike";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   api_base_url,
@@ -475,17 +494,48 @@ public class ${className} {
     }
   };
 
-  function handleEditorDidMount(editor, monaco) {
-    editorRef.current = editor;
-
-    // Add selection change listener
-    editor.onDidChangeCursorSelection((e) => {
-      const selection = editor.getModel().getValueInRange(e.selection);
-      if (selection) {
-        setSelectedCode(selection);
-      }
-    });
-  }
+  const getLanguageExtension = (lang) => {
+    switch (lang?.toLowerCase()) {
+      case "python":
+        return [python()];
+      case "javascript":
+        return [javascript()];
+      case "typescript":
+        return [javascript({ typescript: true })];
+      case "cpp":
+        return [cpp()];
+      case "c":
+        return [cpp()];
+      case "java":
+        return [java()];
+      case "php":
+        return [php()];
+      case "rust":
+        return [rust()];
+      case "go":
+        return [StreamLanguage.define(go)];
+      case "ruby":
+        return [StreamLanguage.define(ruby)];
+      case "bash":
+        return [StreamLanguage.define(shell)];
+      case "swift":
+        return [StreamLanguage.define(swift)];
+      case "haskell":
+        return [StreamLanguage.define(haskell)];
+      case "perl":
+        return [StreamLanguage.define(perl)];
+      case "r":
+        return [StreamLanguage.define(r)];
+      case "kotlin":
+        return [StreamLanguage.define(kotlin)];
+      case "csharp":
+        return [StreamLanguage.define(csharp)];
+      case "scala":
+        return [StreamLanguage.define(scala)];
+      default:
+        return [];
+    }
+  };
 
   const runSelectedCode = () => {
     const codeToRun = selectedCode || "print('Hello World')"; // Default to Hello World if no selection
@@ -835,22 +885,37 @@ public class ${className} {
             flex-col transition-all duration-300
           `}
           >
-            <Editor2
-              onMount={handleEditorDidMount}
-              onChange={(newCode) => setCode(newCode || "")}
-              theme={
-                localStorage.getItem("theme") === "dark" ? "vs-dark" : "light"
-              }
+            <CodeMirror
+              value={code}
               height={
                 isFullScreen ? "calc(100vh - 64px)" : "calc(100vh - 180px)"
               }
-              language={data?.projLanguage || "plaintext"}
-              value={code}
-              options={{
-                ...outputConfig,
-                fontSize: isMobile ? Math.max(16, fontSize) : fontSize,
-                minimap: { enabled: !isMobile },
-                lineNumbers: isMobile ? "off" : "on",
+              theme={
+                localStorage.getItem("theme") === "dark" ? oneDark : "light"
+              }
+              extensions={[
+                ...getLanguageExtension(data?.projLanguage),
+                ...(outputConfig.wrap ? [EditorView.lineWrapping] : []),
+              ]}
+              onChange={(value) => setCode(value)}
+              onStatistics={(stats) => {
+                if (stats.selectedText) setSelectedCode(stats.selectedText);
+              }}
+              onCreateEditor={(view) => {
+                editorRef.current = view;
+              }}
+              basicSetup={{
+                lineNumbers: !isMobile,
+                foldGutter: true,
+                highlightActiveLine: true,
+                highlightActiveLineGutter: !isMobile,
+                autocompletion: true,
+                bracketMatching: true,
+                closeBrackets: true,
+                indentOnInput: true,
+              }}
+              style={{
+                fontSize: `${isMobile ? Math.max(16, fontSize) : fontSize}px`,
               }}
             />
           </div>
