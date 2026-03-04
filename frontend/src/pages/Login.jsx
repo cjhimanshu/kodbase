@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import logo from "../images/logos/logo.png";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { api_base_url } from "../helper";
 import { FaEye, FaEyeSlash, FaRocket } from "react-icons/fa";
@@ -12,39 +12,6 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Check for token in URL params (for OAuth callbacks)
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get("token");
-    const fullName = params.get("fullName");
-    const error = params.get("error");
-
-    if (error) {
-      toast.error("Authentication failed. Please try again.");
-      return;
-    }
-
-    if (token) {
-      localStorage.setItem("token", token);
-      localStorage.setItem("isLoggedIn", "true");
-      if (fullName) {
-        localStorage.setItem("fullName", decodeURIComponent(fullName));
-      }
-
-      toast.success("Login successful!", {
-        position: "top-right",
-        autoClose: 1500,
-        hideProgressBar: true,
-      });
-
-      setTimeout(() => {
-        navigate("/");
-        window.location.reload();
-      }, 1000);
-    }
-  }, [navigate, location.search]);
 
   const submitForm = (e) => {
     e.preventDefault();

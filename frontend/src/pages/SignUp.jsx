@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import logo from "../images/logos/logo.png";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api_base_url } from "../helper";
 import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash, FaRocket } from "react-icons/fa";
@@ -12,17 +12,6 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Check for errors in URL (from OAuth callbacks)
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const error = params.get("error");
-
-    if (error) {
-      toast.error("Authentication failed. Please try another method.");
-    }
-  }, [location]);
 
   const submitForm = (e) => {
     e.preventDefault();
