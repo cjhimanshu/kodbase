@@ -25,14 +25,56 @@ function getStartupCode(language) {
       return 'echo "Hello World"';
     case "ruby":
       return 'puts "Hello World"';
-    case "dart":
-      return 'void main() {\n    print("Hello World");\n}';
+    case "typescript":
+      return 'const greet = (name: string): void => {\n  console.log(`Hello, ${name}!`);\n};\n\ngreet("World");';
     case "swift":
       return 'print("Hello World")';
     case "php":
       return '<?php\necho "Hello World";\n?>';
     case "rust":
       return 'fn main() {\n    println!("Hello World");\n}';
+    case "haskell":
+      return 'main :: IO ()\nmain = putStrLn "Hello World"';
+    case "perl":
+      return 'print "Hello World\\n";';
+    case "lua":
+      return 'print("Hello World")';
+    case "r":
+      return 'cat("Hello World\\n")';
+    case "csharp":
+    case "c#":
+      return 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello World");\n    }\n}';
+    case "scala":
+      return '@main def main() =\n  println("Hello World")';
+    case "elixir":
+      return 'IO.puts "Hello World"';
+    case "erlang":
+      return '-module(main).\n-export([main/0]).\n\nmain() ->\n    io:format("Hello World~n").';
+    case "d":
+      return 'import std.stdio;\n\nvoid main() {\n    writeln("Hello World");\n}';
+    case "groovy":
+      return 'println "Hello World"';
+    case "ocaml":
+      return 'let () = print_endline "Hello World"';
+    case "nim":
+      return 'echo "Hello World"';
+    case "zig":
+      return 'const std = @import("std");\n\npub fn main() void {\n    std.debug.print("Hello World\\n", .{});\n}';
+    case "crystal":
+      return 'puts "Hello World"';
+    case "julia":
+      return 'println("Hello World")';
+    case "sql":
+    case "sqlite":
+      return "SELECT 'Hello World' AS greeting;";
+    case "pascal":
+      return "program HelloWorld;\nbegin\n  writeln('Hello World');\nend.";
+    case "lisp":
+      return '(format t "Hello World~%")';
+    case "pony":
+      return 'actor Main\n  new create(env: Env) =>\n    env.out.print("Hello World")';
+    case "vimscript":
+      return 'echo "Hello World"';
     default:
       return '// Hello World program\nconsole.log("Hello World");';
   }
@@ -640,13 +682,25 @@ const WANDBOX_COMPILER_MAP = {
   perl: { compiler: "perl-5.42.0" },
   lua: { compiler: "lua-5.4.7" },
   r: { compiler: "r-4.4.1" },
-  kotlin: { compiler: "kotlin-1.9.0" },
   csharp: { compiler: "dotnetcore-8.0.402" },
   "c#": { compiler: "dotnetcore-8.0.402" },
   scala: { compiler: "scala-3.5.1" },
+  groovy: { compiler: "groovy-4.0.23" },
   elixir: { compiler: "elixir-1.17.3" },
   erlang: { compiler: "erlang-27.1" },
   typescript: { compiler: "typescript-5.6.2" },
+  d: { compiler: "dmd-2.109.1" },
+  ocaml: { compiler: "ocaml-5.2.0" },
+  nim: { compiler: "nim-2.2.8" },
+  zig: { compiler: "zig-0.13.0" },
+  crystal: { compiler: "crystal-1.13.3" },
+  julia: { compiler: "julia-1.10.5" },
+  sql: { compiler: "sqlite-3.46.1" },
+  sqlite: { compiler: "sqlite-3.46.1" },
+  pascal: { compiler: "fpc-3.2.2" },
+  lisp: { compiler: "sbcl-2.4.9" },
+  pony: { compiler: "pony-0.58.5" },
+  vimscript: { compiler: "vim-9.1.0758" },
 };
 
 const runCode = async (req, res) => {

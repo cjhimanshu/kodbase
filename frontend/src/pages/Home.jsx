@@ -88,7 +88,8 @@ const Home = () => {
     c: projects?.filter((p) => p.projLanguage === "c").length || 0,
     java: projects?.filter((p) => p.projLanguage === "java").length || 0,
     bash: projects?.filter((p) => p.projLanguage === "bash").length || 0,
-    dart: projects?.filter((p) => p.projLanguage === "dart").length || 0,
+    typescript:
+      projects?.filter((p) => p.projLanguage === "typescript").length || 0,
     swift: projects?.filter((p) => p.projLanguage === "swift").length || 0,
     php: projects?.filter((p) => p.projLanguage === "php").length || 0,
     go: projects?.filter((p) => p.projLanguage === "go").length || 0,
@@ -104,40 +105,54 @@ const Home = () => {
     c: "https://upload.wikimedia.org/wikipedia/commons/1/19/C_Logo.png",
     java: "https://static-00.iconduck.com/assets.00/java-icon-1511x2048-6ikx8301.png",
     bash: "https://w7.pngwing.com/pngs/48/567/png-transparent-bash-shell-script-command-line-interface-z-shell-shell-rectangle-logo-commandline-interface-thumbnail.png",
-    dart: "https://upload.wikimedia.org/wikipedia/commons/c/c6/Dart_logo.png",
+    typescript:
+      "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg",
     swift: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Swift_logo.svg",
     php: "https://www.php.net/images/logos/new-php-logo.svg",
     go: "https://go.dev/blog/go-brand/Go-Logo/SVG/Go-Logo_Blue.svg",
     ruby: "https://upload.wikimedia.org/wikipedia/commons/7/73/Ruby_logo.svg",
   };
 
-  const getRunTimes = async () => {
-    let res = await fetch("https://emkc.org/api/v2/piston/runtimes");
-    let data = await res.json();
-
-    // Filter only the required languages
-    const filteredLanguages = [
-      "python",
-      "javascript",
-      "c",
-      "c++",
-      "java",
-      "bash",
-      "dart",
-      "swift",
-      "php",
-      "go",
-      "ruby",
+  const getRunTimes = () => {
+    // All 32 Wandbox-supported languages — sorted alphabetically
+    const options = [
+      { label: "Bash (5.2.21)", value: "bash", version: "5.2.21" },
+      { label: "C (GCC HEAD)", value: "c", version: "16.0.1" },
+      { label: "C++ (GCC HEAD)", value: "cpp", version: "16.0.1" },
+      { label: "C# (.NET 8.0.402)", value: "csharp", version: "8.0.402" },
+      { label: "Crystal (1.13.3)", value: "crystal", version: "1.13.3" },
+      { label: "D (DMD 2.109.1)", value: "d", version: "2.109.1" },
+      { label: "Elixir (1.17.3)", value: "elixir", version: "1.17.3" },
+      { label: "Erlang (27.1)", value: "erlang", version: "27.1" },
+      { label: "Go (1.23.2)", value: "go", version: "1.23.2" },
+      { label: "Groovy (4.0.23)", value: "groovy", version: "4.0.23" },
+      { label: "Haskell (GHC 9.10.1)", value: "haskell", version: "9.10.1" },
+      { label: "Java (OpenJDK 22)", value: "java", version: "22+36" },
+      {
+        label: "JavaScript (Node 20)",
+        value: "javascript",
+        version: "20.17.0",
+      },
+      { label: "Julia (1.10.5)", value: "julia", version: "1.10.5" },
+      { label: "Lisp (SBCL 2.4.9)", value: "lisp", version: "2.4.9" },
+      { label: "Lua (5.4.7)", value: "lua", version: "5.4.7" },
+      { label: "Nim (2.2.8)", value: "nim", version: "2.2.8" },
+      { label: "OCaml (5.2.0)", value: "ocaml", version: "5.2.0" },
+      { label: "Pascal (FPC 3.2.2)", value: "pascal", version: "3.2.2" },
+      { label: "Perl (5.42.0)", value: "perl", version: "5.42.0" },
+      { label: "PHP (8.3.12)", value: "php", version: "8.3.12" },
+      { label: "Pony (0.58.5)", value: "pony", version: "0.58.5" },
+      { label: "Python (3.13.8)", value: "python", version: "3.13.8" },
+      { label: "R (4.4.1)", value: "r", version: "4.4.1" },
+      { label: "Ruby (3.4.1)", value: "ruby", version: "3.4.1" },
+      { label: "Rust (1.82.0)", value: "rust", version: "1.82.0" },
+      { label: "Scala (3.5.1)", value: "scala", version: "3.5.1" },
+      { label: "SQL (SQLite 3.46.1)", value: "sql", version: "3.46.1" },
+      { label: "Swift (6.0.1)", value: "swift", version: "6.0.1" },
+      { label: "TypeScript (5.6.2)", value: "typescript", version: "5.6.2" },
+      { label: "Vim Script (9.1)", value: "vimscript", version: "9.1.0758" },
+      { label: "Zig (0.13.0)", value: "zig", version: "0.13.0" },
     ];
-
-    const options = data
-      .filter((runtime) => filteredLanguages.includes(runtime.language))
-      .map((runtime) => ({
-        label: `${runtime.language} (${runtime.version})`,
-        value: runtime.language === "c++" ? "cpp" : runtime.language,
-        version: runtime.version,
-      }));
-
     setLanguageOptions(options);
   };
 
@@ -548,8 +563,8 @@ const Home = () => {
                           ? "text-red-600 dark:text-red-400"
                           : key === "bash"
                             ? "text-gray-600 dark:text-gray-400"
-                            : key === "dart"
-                              ? "text-teal-600 dark:text-teal-400"
+                            : key === "typescript"
+                              ? "text-sky-600 dark:text-sky-400"
                               : key === "swift"
                                 ? "text-orange-600 dark:text-orange-400"
                                 : key === "php"
@@ -571,8 +586,8 @@ const Home = () => {
                           ? "from-red-50 dark:from-red-900/10"
                           : key === "bash"
                             ? "from-gray-50 dark:from-gray-900/10"
-                            : key === "dart"
-                              ? "from-teal-50 dark:from-teal-900/10"
+                            : key === "typescript"
+                              ? "from-sky-50 dark:from-sky-900/10"
                               : key === "swift"
                                 ? "from-orange-50 dark:from-orange-900/10"
                                 : key === "php"
@@ -594,8 +609,8 @@ const Home = () => {
                           ? "border-red-100/30 dark:border-red-700/30"
                           : key === "bash"
                             ? "border-gray-100/30 dark:border-gray-700/30"
-                            : key === "dart"
-                              ? "border-teal-100/30 dark:border-teal-700/30"
+                            : key === "typescript"
+                              ? "border-sky-100/30 dark:border-sky-700/30"
                               : key === "swift"
                                 ? "border-orange-100/30 dark:border-orange-700/30"
                                 : key === "php"
@@ -617,8 +632,8 @@ const Home = () => {
                           ? "from-red-400 to-rose-500"
                           : key === "bash"
                             ? "from-gray-400 to-slate-500"
-                            : key === "dart"
-                              ? "from-teal-400 to-cyan-500"
+                            : key === "typescript"
+                              ? "from-sky-400 to-blue-500"
                               : key === "swift"
                                 ? "from-orange-400 to-amber-500"
                                 : key === "php"
@@ -640,8 +655,8 @@ const Home = () => {
                           ? "rgba(239,68,68,0.15)"
                           : key === "bash"
                             ? "rgba(107,114,128,0.15)"
-                            : key === "dart"
-                              ? "rgba(20,184,166,0.15)"
+                            : key === "typescript"
+                              ? "rgba(14,165,233,0.15)"
                               : key === "swift"
                                 ? "rgba(249,115,22,0.15)"
                                 : key === "php"

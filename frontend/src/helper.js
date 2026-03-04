@@ -120,8 +120,66 @@ export const getGuestStartupCode = (language) => {
     case "kotlin":
       return '// Welcome to Kotlin Guest Mode\n\nfun main() {\n    println("Hello, Guest User!")\n    \n    // You can edit this code and run it without creating an account\n    // Start coding below:\n    \n}\n';
 
-    case "dart":
-      return '// Welcome to Dart Guest Mode\n\nvoid main() {\n  print("Hello, Guest User!");\n  \n  // You can edit this code and run it without creating an account\n  // Start coding below:\n  \n}\n';
+    case "haskell":
+      return '-- Welcome to Haskell Guest Mode\n\nmain :: IO ()\nmain = putStrLn "Hello, Guest User!"\n';
+
+    case "perl":
+      return '# Welcome to Perl Guest Mode\n\nprint "Hello, Guest User!\\n";\n';
+
+    case "lua":
+      return '-- Welcome to Lua Guest Mode\n\nprint("Hello, Guest User!")\n';
+
+    case "r":
+      return '# Welcome to R Guest Mode\n\ncat("Hello, Guest User!\\n")\n';
+
+    case "csharp":
+    case "c#":
+      return '// Welcome to C# Guest Mode\n\nusing System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, Guest User!");\n    }\n}\n';
+
+    case "scala":
+      return '// Welcome to Scala Guest Mode\n\n@main def main() =\n  println("Hello, Guest User!")\n';
+
+    case "groovy":
+      return '// Welcome to Groovy Guest Mode\n\nprintln "Hello, Guest User!"\n';
+
+    case "elixir":
+      return '# Welcome to Elixir Guest Mode\n\nIO.puts "Hello, Guest User!"\n';
+
+    case "erlang":
+      return '% Welcome to Erlang Guest Mode\n\n-module(main).\n-export([main/0]).\n\nmain() ->\n    io:format("Hello, Guest User!~n").\n';
+
+    case "d":
+      return '// Welcome to D Guest Mode\n\nimport std.stdio;\n\nvoid main() {\n    writeln("Hello, Guest User!");\n}\n';
+
+    case "ocaml":
+      return '(* Welcome to OCaml Guest Mode *)\n\nlet () = print_endline "Hello, Guest User!"\n';
+
+    case "nim":
+      return '# Welcome to Nim Guest Mode\n\necho "Hello, Guest User!"\n';
+
+    case "zig":
+      return '// Welcome to Zig Guest Mode\n\nconst std = @import("std");\n\npub fn main() void {\n    std.debug.print("Hello, Guest User!\\n", .{});\n}\n';
+
+    case "crystal":
+      return '# Welcome to Crystal Guest Mode\n\nputs "Hello, Guest User!"\n';
+
+    case "julia":
+      return '# Welcome to Julia Guest Mode\n\nprintln("Hello, Guest User!")\n';
+
+    case "sql":
+      return "-- Welcome to SQL Guest Mode\n\nSELECT 'Hello, Guest User!' AS greeting;\n";
+
+    case "pascal":
+      return "{ Welcome to Pascal Guest Mode }\n\nprogram HelloGuest;\nbegin\n  writeln('Hello, Guest User!');\nend.\n";
+
+    case "lisp":
+      return '; Welcome to Lisp Guest Mode\n\n(format t "Hello, Guest User!~%")\n';
+
+    case "pony":
+      return '// Welcome to Pony Guest Mode\n\nactor Main\n  new create(env: Env) =>\n    env.out.print("Hello, Guest User!")\n';
+
+    case "vimscript":
+      return '" Welcome to Vim Script Guest Mode\n\necho "Hello, Guest User!"\n';
 
     default:
       return "// Welcome to Guest Mode\n\n// You can edit this code and run it without creating an account\n// Start coding below:\n\n";

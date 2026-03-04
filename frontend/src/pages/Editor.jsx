@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import JSZip from "jszip";
 import Navbar from "../components/Navbar";
-import CodeMirror from "@uiw/react-codemirror";
+import { EditorState, Compartment } from "@codemirror/state";
+import { basicSetup } from "codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { EditorView } from "@codemirror/view";
 import { python } from "@codemirror/lang-python";
@@ -58,7 +59,13 @@ const Editor = () => {
   const [error, setError] = useState(false);
   const [data, setData] = useState(null);
   const [selectedCode, setSelectedCode] = useState("");
-  const editorRef = useRef(null);
+  const editorRef = useRef(null); // holds the EditorView instance
+  const cmContainerRef = useRef(null); // editor DOM container
+  const skipSyncRef = useRef(false); // prevents code sync loop
+  const langCompartment = useRef(new Compartment());
+  const themeCompartment = useRef(new Compartment());
+  const wrapCompartment = useRef(new Compartment());
+  const fontCompartment = useRef(new Compartment());
   const [isRunning, setIsRunning] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -641,19 +648,31 @@ public class ${className} {
       c: "c",
       java: "java",
       bash: "sh",
-      dart: "dart",
       swift: "swift",
       php: "php",
       go: "go",
       ruby: "rb",
       csharp: "cs",
-      kotlin: "kt",
       rust: "rs",
       haskell: "hs",
       perl: "pl",
       plaintext: "txt",
       scala: "scala",
+      groovy: "groovy",
       r: "r",
+      d: "d",
+      elixir: "ex",
+      erlang: "erl",
+      ocaml: "ml",
+      nim: "nim",
+      zig: "zig",
+      crystal: "cr",
+      julia: "jl",
+      sql: "sql",
+      pascal: "pas",
+      lisp: "lisp",
+      pony: "pony",
+      vimscript: "vim",
     };
 
     if (!language) return "txt";
@@ -703,6 +722,44 @@ public class ${className} {
           return "dart";
         case "bash":
           return "sh";
+        case "haskell":
+          return "hs";
+        case "perl":
+          return "pl";
+        case "lua":
+          return "lua";
+        case "r":
+          return "r";
+        case "scala":
+          return "scala";
+        case "groovy":
+          return "groovy";
+        case "elixir":
+          return "ex";
+        case "erlang":
+          return "erl";
+        case "d":
+          return "d";
+        case "ocaml":
+          return "ml";
+        case "nim":
+          return "nim";
+        case "zig":
+          return "zig";
+        case "crystal":
+          return "cr";
+        case "julia":
+          return "jl";
+        case "sql":
+          return "sql";
+        case "pascal":
+          return "pas";
+        case "lisp":
+          return "lisp";
+        case "pony":
+          return "pony";
+        case "vimscript":
+          return "vim";
         default:
           return "txt";
       }
@@ -728,6 +785,96 @@ public class ${className} {
       toast.success(`Downloaded as ${zipFileName}`);
     });
   };
+
+  // ─── CodeMirror 6 direct setup ──────────────────────────────────────────
+  useEffect(() => {
+    if (!cmContainerRef.current) return;
+    const state = EditorState.create({
+      doc: "",
+      extensions: [
+        basicSetup,
+        langCompartment.current.of([]),
+        themeCompartment.current.of(theme === "dark" ? oneDark : []),
+        wrapCompartment.current.of(EditorView.lineWrapping),
+        fontCompartment.current.of(
+          EditorView.theme({ "&": { fontSize: `${fontSize}px` } }),
+        ),
+        EditorView.theme({
+          "&": { height: "100%" },
+          ".cm-scroller": { overflow: "auto" },
+        }),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            skipSyncRef.current = true;
+            setCode(update.state.doc.toString());
+          }
+          const sel = update.state.selection.main;
+          if (!sel.empty) {
+            setSelectedCode(update.state.sliceDoc(sel.from, sel.to));
+          }
+        }),
+      ],
+    });
+    const view = new EditorView({ state, parent: cmContainerRef.current });
+    editorRef.current = view;
+    return () => view.destroy();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync externally-set code (project load) into the editor
+  useEffect(() => {
+    if (!editorRef.current) return;
+    if (skipSyncRef.current) {
+      skipSyncRef.current = false;
+      return;
+    }
+    const editorDoc = editorRef.current.state.doc.toString();
+    if (editorDoc !== code) {
+      editorRef.current.dispatch({
+        changes: { from: 0, to: editorDoc.length, insert: code },
+      });
+    }
+  }, [code]);
+
+  // Reconfigure language when project loads or changes
+  useEffect(() => {
+    if (!editorRef.current) return;
+    editorRef.current.dispatch({
+      effects: langCompartment.current.reconfigure(
+        getLanguageExtension(data?.projLanguage),
+      ),
+    });
+  }, [data?.projLanguage]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reconfigure theme
+  useEffect(() => {
+    if (!editorRef.current) return;
+    editorRef.current.dispatch({
+      effects: themeCompartment.current.reconfigure(
+        theme === "dark" ? oneDark : [],
+      ),
+    });
+  }, [theme]);
+
+  // Reconfigure font size
+  useEffect(() => {
+    if (!editorRef.current) return;
+    const size = isMobile ? Math.max(16, fontSize) : fontSize;
+    editorRef.current.dispatch({
+      effects: fontCompartment.current.reconfigure(
+        EditorView.theme({ "&": { fontSize: `${size}px` } }),
+      ),
+    });
+  }, [fontSize, isMobile]);
+
+  // Reconfigure line wrapping
+  useEffect(() => {
+    if (!editorRef.current) return;
+    editorRef.current.dispatch({
+      effects: wrapCompartment.current.reconfigure(
+        outputConfig.wrap ? EditorView.lineWrapping : [],
+      ),
+    });
+  }, [outputConfig.wrap]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -891,38 +1038,14 @@ public class ${className} {
             flex-col transition-all duration-300
           `}
           >
-            <CodeMirror
-              value={code}
-              height={
-                isFullScreen ? "calc(100vh - 64px)" : "calc(100vh - 180px)"
-              }
-              theme={
-                localStorage.getItem("theme") === "dark" ? oneDark : "light"
-              }
-              extensions={[
-                ...getLanguageExtension(data?.projLanguage),
-                ...(outputConfig.wrap ? [EditorView.lineWrapping] : []),
-              ]}
-              onChange={(value) => setCode(value)}
-              onStatistics={(stats) => {
-                if (stats.selectedText) setSelectedCode(stats.selectedText);
-              }}
-              onCreateEditor={(view) => {
-                editorRef.current = view;
-              }}
-              basicSetup={{
-                lineNumbers: !isMobile,
-                foldGutter: true,
-                highlightActiveLine: true,
-                highlightActiveLineGutter: !isMobile,
-                autocompletion: true,
-                bracketMatching: true,
-                closeBrackets: true,
-                indentOnInput: true,
-              }}
+            <div
+              ref={cmContainerRef}
               style={{
-                fontSize: `${isMobile ? Math.max(16, fontSize) : fontSize}px`,
+                height: isFullScreen
+                  ? "calc(100vh - 64px)"
+                  : "calc(100vh - 180px)",
               }}
+              className="overflow-hidden"
             />
           </div>
 
