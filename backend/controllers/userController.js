@@ -621,20 +621,61 @@ const verifyResetCode = async (req, res) => {
   }
 };
 
+// Wandbox compiler map — completely free, no API key required
+// Full list: https://wandbox.org/api/list.json
+const WANDBOX_COMPILER_MAP = {
+  python: { compiler: "cpython-3.13.8" },
+  javascript: { compiler: "nodejs-20.17.0" },
+  java: { compiler: "openjdk-jdk-22+36" },
+  cpp: { compiler: "gcc-head" },
+  c: { compiler: "gcc-head-c" },
+  go: { compiler: "go-1.23.2" },
+  ruby: { compiler: "ruby-3.4.1" },
+  rust: { compiler: "rust-1.82.0" },
+  php: { compiler: "php-8.3.12" },
+  swift: { compiler: "swift-6.0.1" },
+  bash: { compiler: "bash" },
+  shell: { compiler: "bash" },
+  haskell: { compiler: "ghc-9.10.1" },
+  perl: { compiler: "perl-5.42.0" },
+  lua: { compiler: "lua-5.4.7" },
+  r: { compiler: "r-4.4.1" },
+  kotlin: { compiler: "kotlin-1.9.0" },
+  csharp: { compiler: "dotnetcore-8.0.402" },
+  "c#": { compiler: "dotnetcore-8.0.402" },
+  scala: { compiler: "scala-3.5.1" },
+  elixir: { compiler: "elixir-1.17.3" },
+  erlang: { compiler: "erlang-27.1" },
+  typescript: { compiler: "typescript-5.6.2" },
+};
+
 const runCode = async (req, res) => {
   try {
-    const pistonUrl = "https://emkc.org/api/v2/piston/execute";
-    const apiKey = process.env.PISTON_API_KEY;
+    const { language, files, stdin } = req.body;
+    const sourceCode = files?.[0]?.content || "";
+    const langConfig = WANDBOX_COMPILER_MAP[language?.toLowerCase()];
 
-    const headers = { "Content-Type": "application/json" };
-    if (apiKey) {
-      headers["Authorization"] = apiKey;
+    if (!langConfig) {
+      return res.status(400).json({
+        success: false,
+        msg: `Unsupported language: ${language}`,
+      });
     }
 
-    const response = await fetch(pistonUrl, {
+    const body = {
+      code: sourceCode,
+      compiler: langConfig.compiler,
+      stdin: stdin || "",
+      "compiler-option-raw": "",
+    };
+    if (langConfig.options) {
+      body.options = langConfig.options;
+    }
+
+    const response = await fetch("https://wandbox.org/api/compile.json", {
       method: "POST",
-      headers,
-      body: JSON.stringify(req.body),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -646,10 +687,27 @@ const runCode = async (req, res) => {
       });
     }
 
-    const data = await response.json();
-    return res.status(200).json(data);
+    const result = await response.json();
+
+    const stdout = result.program_output || "";
+    const stderr =
+      result.program_error ||
+      result.compiler_error ||
+      result.compiler_message ||
+      "";
+    const hasError = result.status !== "0" && result.status !== 0;
+
+    // Return in Piston-compatible format so frontend needs no changes
+    return res.status(200).json({
+      run: {
+        stdout,
+        stderr: hasError ? stderr : "",
+        code: hasError ? 1 : 0,
+        output: stdout || stderr,
+      },
+    });
   } catch (error) {
-    console.error("runCode proxy error:", error.message);
+    console.error("runCode error:", error.message);
     return res.status(500).json({
       success: false,
       msg: "Failed to execute code: " + error.message,

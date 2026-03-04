@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import JSZip from "jszip";
 import Navbar from "../components/Navbar";
 import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -709,18 +710,23 @@ public class ${className} {
 
     // Use project name for the filename when available
     const projectName = data?.name || "code";
-    const fileName = `${projectName}.${getFileExtension(data?.projLanguage)}`;
+    const codeFileName = `${projectName}.${getFileExtension(data?.projLanguage)}`;
+    const zipFileName = `${projectName}.zip`;
 
-    // Create a download link
-    const element = document.createElement("a");
-    const file = new Blob([code], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = fileName;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    // Create a ZIP containing the code file
+    const zip = new JSZip();
+    zip.file(codeFileName, code);
 
-    toast.success(`Downloaded as ${fileName}`);
+    zip.generateAsync({ type: "blob" }).then((content) => {
+      const element = document.createElement("a");
+      element.href = URL.createObjectURL(content);
+      element.download = zipFileName;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      URL.revokeObjectURL(element.href);
+      toast.success(`Downloaded as ${zipFileName}`);
+    });
   };
 
   return (
