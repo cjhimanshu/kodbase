@@ -19,11 +19,23 @@ var app = express();
 const isProd = process.env.NODE_ENV === "production";
 const frontendUrl =
   process.env.FRONTEND_URL || (!isProd ? "http://localhost:5173" : undefined);
-if (isProd && !frontendUrl) {
-  console.warn(
-    "FRONTEND_URL not set for production; CORS will reject all origins",
-  );
-}
+
+// Build list of allowed origins (supports multiple comma-separated URLs)
+const allowedOrigins = [
+  ...(frontendUrl ? frontendUrl.split(",").map((u) => u.trim()) : []),
+  "http://localhost:5173",
+  "http://localhost:5174",
+];
+
+const corsOrigin = (origin, callback) => {
+  // Allow requests with no origin (Postman, curl, server-to-server)
+  if (!origin) return callback(null, true);
+  // Allow any vercel.app subdomain
+  if (origin.endsWith(".vercel.app") || allowedOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+  return callback(new Error("Not allowed by CORS"));
+};
 
 // view engine setup - avoid jade dependency issues
 app.set("views", path.join(__dirname, "views"));
@@ -41,7 +53,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // CORS configuration
 app.use(
   cors({
-    origin: frontendUrl || false,
+    origin: corsOrigin,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
