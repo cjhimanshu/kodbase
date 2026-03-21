@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const { passport, hasGoogleOAuthConfig } = require("../config/passport-google");
+const {
+  passport,
+  hasGoogleOAuthConfig,
+  getGoogleCallbackUrl,
+} = require("../config/passport-google");
 require("dotenv").config();
 
 const secret = process.env.JWT_SECRET || "your_jwt_secret";
@@ -22,6 +26,7 @@ router.get("/google", (req, res, next) => {
     scope: ["profile", "email"],
     session: false,
     prompt: "select_account",
+    callbackURL: getGoogleCallbackUrl(req),
   })(req, res, next);
 });
 
@@ -34,7 +39,7 @@ router.get("/google/callback", (req, res, next) => {
 
   return passport.authenticate(
     "google",
-    { session: false },
+    { session: false, callbackURL: getGoogleCallbackUrl(req) },
     (err, user) => {
       if (err || !user) {
         return res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
@@ -57,6 +62,16 @@ router.get("/google/callback", (req, res, next) => {
       );
     },
   )(req, res, next);
+});
+
+router.get("/google/status", (req, res) => {
+  res.json({
+    configured: hasGoogleOAuthConfig,
+    hasGoogleClientId: Boolean(process.env.GOOGLE_CLIENT_ID),
+    hasGoogleClientSecret: Boolean(process.env.GOOGLE_CLIENT_SECRET),
+    callbackUrl: getGoogleCallbackUrl(req),
+    frontendUrl,
+  });
 });
 
 module.exports = router;
