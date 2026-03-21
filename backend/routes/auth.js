@@ -42,6 +42,10 @@ router.get("/google/callback", (req, res, next) => {
     { session: false, callbackURL: getGoogleCallbackUrl(req) },
     (err, user) => {
       if (err || !user) {
+        console.error("Google auth callback failed:", {
+          message: err?.message || "No user returned from Google auth",
+          hasUser: Boolean(user),
+        });
         return res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
       }
 
