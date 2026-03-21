@@ -20,6 +20,7 @@ const Login = () => {
     const token = params.get("token");
     const fullName = params.get("fullName");
     const error = params.get("error");
+    const errorDetail = params.get("error_detail");
 
     if (token) {
       localStorage.removeItem("token");
@@ -44,7 +45,9 @@ const Login = () => {
           "Google sign-in is not configured on the server yet.",
       };
 
-      toast.error(errorMessages[error] || "Unable to complete Google sign-in.");
+      toast.error(
+        errorDetail || errorMessages[error] || "Unable to complete Google sign-in.",
+      );
       navigate("/login", { replace: true });
     }
   }, [location.search, navigate]);

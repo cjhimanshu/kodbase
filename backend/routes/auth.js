@@ -14,11 +14,22 @@ const frontendUrl = (
 )
   .split(",")[0]
   .trim();
+const redirectWithError = (res, errorCode, detail) => {
+  const params = new URLSearchParams({ error: errorCode });
+
+  if (detail) {
+    params.set("error_detail", detail.slice(0, 180));
+  }
+
+  return res.redirect(`${frontendUrl}/login?${params.toString()}`);
+};
 
 router.get("/google", (req, res, next) => {
   if (!hasGoogleOAuthConfig) {
-    return res.redirect(
-      `${frontendUrl}/login?error=google_auth_not_configured`,
+    return redirectWithError(
+      res,
+      "google_auth_not_configured",
+      "Google OAuth environment variables are missing.",
     );
   }
 
@@ -32,8 +43,10 @@ router.get("/google", (req, res, next) => {
 
 router.get("/google/callback", (req, res, next) => {
   if (!hasGoogleOAuthConfig) {
-    return res.redirect(
-      `${frontendUrl}/login?error=google_auth_not_configured`,
+    return redirectWithError(
+      res,
+      "google_auth_not_configured",
+      "Google OAuth environment variables are missing.",
     );
   }
 
@@ -42,11 +55,15 @@ router.get("/google/callback", (req, res, next) => {
     { session: false, callbackURL: getGoogleCallbackUrl(req) },
     (err, user) => {
       if (err || !user) {
+        const detail = err?.message || "No user returned from Google auth";
+
         console.error("Google auth callback failed:", {
-          message: err?.message || "No user returned from Google auth",
+          message: detail,
+          stack: err?.stack,
+          name: err?.name,
           hasUser: Boolean(user),
         });
-        return res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+        return redirectWithError(res, "google_auth_failed", detail);
       }
 
       const token = jwt.sign(
