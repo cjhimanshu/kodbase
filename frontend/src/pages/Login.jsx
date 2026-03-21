@@ -1,17 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../images/logos/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { api_base_url } from "../helper";
-import { FaEye, FaEyeSlash, FaRocket } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGoogle, FaRocket } from "react-icons/fa";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    const fullName = params.get("fullName");
+    const error = params.get("error");
+
+    if (token) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("fullName");
+      localStorage.removeItem("isGuest");
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("fullName", fullName || "Google User");
+
+      toast.success("Signed in with Google successfully!");
+      navigate("/", { replace: true });
+      window.location.href = "/";
+      return;
+    }
+
+    if (error) {
+      const errorMessages = {
+        google_auth_failed: "Google sign-in failed. Please try again.",
+        google_auth_not_configured:
+          "Google sign-in is not configured on the server yet.",
+      };
+
+      toast.error(errorMessages[error] || "Unable to complete Google sign-in.");
+      navigate("/login", { replace: true });
+    }
+  }, [location.search, navigate]);
 
   const submitForm = (e) => {
     e.preventDefault();
@@ -84,6 +120,11 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSignIn = () => {
+    setIsGoogleLoading(true);
+    window.location.href = `${api_base_url}/auth/google`;
+  };
+
   const handleGuestMode = () => {
     // Set guest mode in localStorage
     localStorage.setItem("isGuest", "true");
@@ -149,6 +190,18 @@ const Login = () => {
           <div className="absolute border-t border-gray-700 w-full"></div>
           <div className="relative px-4 bg-black text-gray-400">OR</div>
         </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={isGoogleLoading}
+          className="w-full py-3 rounded-lg transition-all flex items-center justify-center gap-3 bg-white text-gray-900 hover:bg-gray-100 font-medium disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          <FaGoogle className="text-red-500 text-lg" />
+          <span>
+            {isGoogleLoading ? "Redirecting to Google..." : "Continue with Google"}
+          </span>
+        </button>
 
         <form onSubmit={submitForm} className="space-y-4">
           <div>

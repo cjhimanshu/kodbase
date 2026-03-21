@@ -221,6 +221,13 @@ const login = async (req, res) => {
       });
     }
 
+    if (!user.password) {
+      return res.status(400).json({
+        success: false,
+        msg: "This account uses Google sign-in. Please continue with Google.",
+      });
+    }
+
     try {
       // Log the provided password and the stored hash for debugging
       console.log(`Login attempt for ${email}`);

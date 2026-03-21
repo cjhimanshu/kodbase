@@ -7,9 +7,11 @@ var cors = require("cors");
 // Import the fs module for error handling without templates
 const fs = require("fs");
 require("dotenv").config();
+const { passport } = require("./config/passport-google");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var authRouter = require("./routes/auth");
 const connectDB = require("./config/db");
 
 connectDB();
@@ -48,6 +50,7 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, "public")));
 
 // CORS configuration
@@ -62,6 +65,7 @@ app.use(
 
 // Routes
 app.use("/", indexRouter);
+app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 
 // catch 404 and forward to error handler

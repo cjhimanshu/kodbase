@@ -9,10 +9,29 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    lowercase: true,
+    trim: true,
   },
   password: {
     type: String,
-    required: true,
+    default: null,
+  },
+  authProvider: {
+    type: String,
+    enum: ["local", "google", "github", "facebook"],
+    default: "local",
+  },
+  googleId: {
+    type: String,
+    sparse: true,
+  },
+  githubId: {
+    type: String,
+    sparse: true,
+  },
+  facebookId: {
+    type: String,
+    sparse: true,
   },
   resetPasswordCode: String,
   resetPasswordExpires: Date,
