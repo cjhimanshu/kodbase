@@ -131,11 +131,6 @@ export const getGuestStartupCode = (language) => {
 
     case "r":
       return '# Welcome to R Guest Mode\n\ncat("Hello, Guest User!\\n")\n';
-
-    case "csharp":
-    case "c#":
-      return '// Welcome to C# Guest Mode\n\nusing System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, Guest User!");\n    }\n}\n';
-
     case "scala":
       return '// Welcome to Scala Guest Mode\n\n@main def main() =\n  println("Hello, Guest User!")\n';
 
