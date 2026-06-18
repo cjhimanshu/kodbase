@@ -270,22 +270,6 @@ const Editor = () => {
     }
   };
 
-  // Shortcut handler for saving with Ctrl+S
-  const handleSaveShortcut = (e) => {
-    if (e.ctrlKey && e.key === "s") {
-      e.preventDefault(); // Prevent browser's default save behavior
-      saveProject(); // Call the save function
-    }
-  };
-
-  // Add and clean up keyboard event listener
-  useEffect(() => {
-    window.addEventListener("keydown", handleSaveShortcut);
-    return () => {
-      window.removeEventListener("keydown", handleSaveShortcut);
-    };
-  }, [code]); // Reattach when `code` changes
-
   const runProject = async () => {
     setIsRunning(true);
     setExecutionSteps({
@@ -785,6 +769,38 @@ public class ${className} {
       toast.success(`Downloaded as ${zipFileName}`);
     });
   };
+
+  // Add and clean up keyboard event listener
+  useEffect(() => {
+    const handleEditorShortcuts = (e) => {
+      const isModifierPressed = e.ctrlKey || e.metaKey;
+
+      if (!isModifierPressed) {
+        return;
+      }
+
+      const key = e.key.toLowerCase();
+
+      if (key === "s") {
+        e.preventDefault();
+        handleSave();
+      } else if (key === "b") {
+        e.preventDefault();
+        runProject();
+      } else if (key === "f") {
+        e.preventDefault();
+        setIsFullScreen((prev) => !prev);
+      } else if (key === "d") {
+        e.preventDefault();
+        handleDownload();
+      }
+    };
+
+    window.addEventListener("keydown", handleEditorShortcuts);
+    return () => {
+      window.removeEventListener("keydown", handleEditorShortcuts);
+    };
+  }, [handleDownload, handleSave, runProject]);
 
   // ─── CodeMirror 6 direct setup ──────────────────────────────────────────
   useEffect(() => {
