@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Fail if backend/.env is tracked
+        run: |
+          if git ls-files --error-unmatch backend/.env; then
+            echo "ERROR: backend/.env is tracked in git. Remove it and rotate secrets.";
+            git ls-files --stage | grep backend/.env || true;
+            exit 1;
+          fi
+
+      - name: Frontend Lint
+        run: npm run lint
+        working-directory: frontend
+
+      - name: Frontend Build
+        run: npm run build
+        working-directory: frontend
